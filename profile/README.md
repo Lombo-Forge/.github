@@ -11,7 +11,9 @@ Everything here is [GPL-3.0](https://www.gnu.org/licenses/gpl-3.0.html). None of
 | [**lombo-jellyfin-template**](https://github.com/Lombo-Forge/lombo-jellyfin-template) | Starting point for your own small Jellyfin companion app: tested, containerised, renames itself in one command. | Released, 1.0.0 |
 | **LomboTier** | Moves movies and seasons between SSD and HDD based on what people actually watch (mergerfs). | In progress |
 | **LomboShrink** | Uses the discrete graphics card in your main PC to re-encode a library to H.265, then swaps the smaller files in safely. | In progress |
-| **LomboShelf** | A streaming-style home screen and theme for Jellyfin, as a plugin. | Planned |
+| **LomboShelf** | A streaming-style home screen and theme for Jellyfin, as a plugin. | In progress (skeleton) |
+| **LomboNudge** | Finds requests that were approved but never arrived, and says why. | In progress |
+| **LomboNap** | Asks "Still watching?" and stops playback nobody is watching; reports what woke your sleeping disks. | In progress |
 
 More are planned. Each gets its own repository, its own releases and its own issues.
 
