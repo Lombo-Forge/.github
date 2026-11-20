@@ -8,7 +8,7 @@ if git ls-files >/dev/null 2>&1 && [ -n "$(git ls-files)" ]; then
 else
   files=$(find . -type f -not -path './.git/*' -not -path '*/__pycache__/*' -not -path './.pytest_cache/*' | sed 's|^\./||')
 fi
-hits=$(printf '%s\n' "$files" | grep -v -e '^scripts/leak-patterns.txt$' -e '^scripts/leak-check.sh$' -e '^LICENSE$' \
+hits=$(printf '%s\n' "$files" | grep -v -e '^scripts/leak-patterns.txt$' -e '^scripts/leak-check.sh$' -e '^LICENSE$' -e '^FUNDING.yml$' \
   | xargs grep -nIiE -f scripts/leak-patterns.txt 2>/dev/null || true)
 if [ -n "$hits" ]; then
   printf 'Leak check FAILED. Remove these before publishing:\n%s\n' "$hits" >&2
