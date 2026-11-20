@@ -1,0 +1,44 @@
+name: Bug report
+description: Something does not work the way it should
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. **Remove API keys, webhook URLs, addresses and private paths before pasting anything.**
+        Security problems go through the Security tab, not here.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: How can we see it happen?
+      description: The commands you ran or the steps you took.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version of this app
+      placeholder: "1.0.0"
+    validations:
+      required: true
+  - type: input
+    id: jellyfin
+    attributes:
+      label: Jellyfin version
+      placeholder: "12.4.0"
+  - type: dropdown
+    id: how
+    attributes:
+      label: How do you run it?
+      options: [Docker, Docker Compose, Bare metal, Other]
+  - type: textarea
+    id: doctor
+    attributes:
+      label: Output of the doctor command, if the app has one
+      render: text
