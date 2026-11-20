@@ -1,15 +1,17 @@
 #!/bin/sh
-# Put the "Protect main" ruleset (rulesets/protect-main.json) on every repo in the organisation.
-# Safe to run again: a repo that already has it is updated, never duplicated.
+# Give every repo in the organisation the standard defaults:
+#   - the "Protect main" ruleset (rulesets/protect-main.json)
+#   - "Automatically delete head branches" after a pull request is merged (restorable from the PR)
+# Safe to run again: a repo that already has them is updated, never duplicated.
 #
-#   scripts/apply-ruleset.sh                       every non-archived repo
-#   scripts/apply-ruleset.sh lombo-tier            one repo
-#   scripts/apply-ruleset.sh lombo-tier --checks test,leak-check
+#   scripts/apply-repo-defaults.sh                       every non-archived repo
+#   scripts/apply-repo-defaults.sh lombo-tier            one repo
+#   scripts/apply-repo-defaults.sh lombo-tier --checks test,leak-check
 #                                                  one repo, plus required CI checks (job names)
 #   add --dry-run to see what would happen
 #
-# Why a script: organisation-wide rulesets need the paid GitHub Team plan, so on the Free plan each
-# repo gets its own copy. Run this after creating a repo. Needs `gh` logged in as an org admin.
+# Why a script: organisation-wide rulesets and defaults need the paid GitHub Team plan, so on the Free
+# plan each repo gets its own copy. Run this after creating a repo. Needs `gh` logged in as an org admin.
 set -eu
 cd "$(dirname "$0")/.."
 ORG=${LOMBO_ORG:-Lombo-Forge}
@@ -44,6 +46,7 @@ for r in $repos; do
   id=$(gh api "repos/$ORG/$r/rulesets" --jq ".[] | select(.name==\"$NAME\") | .id" | head -n1)
   if [ -n "$id" ]; then verb=PUT; url="repos/$ORG/$r/rulesets/$id"; word=update
   else verb=POST; url="repos/$ORG/$r/rulesets"; word=create; fi
-  if [ -n "$dry" ]; then echo "[dry run] would $word '$NAME' on $r"; continue; fi
+  if [ -n "$dry" ]; then echo "[dry run] would $word '$NAME' and turn on branch deletion on $r"; continue; fi
   printf '%s' "$body" | gh api -X "$verb" "$url" --input - --jq '"\(.name): ok"' | sed "s|^|$word $r: |"
+  gh api -X PATCH "repos/$ORG/$r" -F delete_branch_on_merge=true --jq '"set \(.name): delete_branch_on_merge=\(.delete_branch_on_merge)"'
 done
