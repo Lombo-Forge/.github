@@ -13,10 +13,10 @@ The organisation's front page and shared community files.
 
 Every repo gets the same two defaults:
 
-- **Protect main:** `main` cannot be deleted or force-pushed, history stays linear, and changes need a pull request with one approval and resolved review threads. The organisation owner bypasses it. Outside contributors can only fork and send pull requests.
+- **Protect main:** `main` cannot be deleted or force-pushed, history stays linear, and changes need a pull request that passes the required CI checks, with review threads resolved. No approval count is required (one maintainer cannot approve their own pull request), and the organisation owner can bypass the rules. Outside contributors can only fork and send pull requests.
 - **Automatically delete head branches:** a pull request's branch is deleted when it is merged. Deleted branches can still be restored from the pull request.
 
-Organisation-wide rulesets and defaults need the paid GitHub Team plan, so on the Free plan the script copies them onto each repo. **Run it after creating any repo**, and again after editing the JSON; it never duplicates:
+Organisation-wide rulesets and defaults need the paid GitHub Team plan, so on the Free plan the script copies them onto each repo. **Run it after creating any repo**, and again after editing the JSON; it never duplicates, and without `--checks` it keeps the repo's existing required checks:
 
 ```sh
 scripts/apply-repo-defaults.sh                          # every repo in the organisation
