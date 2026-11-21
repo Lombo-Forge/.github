@@ -2,9 +2,9 @@
 # What to know before merging a pull request: who sent it, whether it comes from a fork, which sensitive files it
 # touches, and what CI says. Prints a verdict; exits 1 when an outside author touches a sensitive file.
 #   scripts/pr-check.sh <repo> <number>          e.g. scripts/pr-check.sh lombo-tier 12
-# Trusted authors: the owner and Dependabot (the account, not a title that says "Bump"). Everything else is outside.
+# Trusted authors: you (the account gh is logged in as, or LOMBO_OWNER) and Dependabot (the account, not a title that says "Bump"). Everything else is outside.
 set -eu
-ORG=${LOMBO_ORG:-Lombo-Forge}; OWNER=${LOMBO_OWNER:-DatLombardo}
+ORG=${LOMBO_ORG:-Lombo-Forge}; OWNER=${LOMBO_OWNER:-$(gh api user --jq .login)}
 repo=${1:?usage: pr-check.sh <repo> <number>}; n=${2:?usage: pr-check.sh <repo> <number>}
 info=$(gh api "repos/$ORG/$repo/pulls/$n" --jq '[.user.login, .head.repo.full_name, .base.repo.full_name, .title, (.changed_files|tostring), (.additions|tostring), (.deletions|tostring)] | @tsv')
 author=$(printf '%s' "$info" | cut -f1); head=$(printf '%s' "$info" | cut -f2); base=$(printf '%s' "$info" | cut -f3)
