@@ -29,7 +29,13 @@ while [ $# -gt 0 ]; do
 done
 [ -z "$checks" ] || [ -n "$repo" ] || { echo "--checks needs a single repo name" >&2; exit 2; }
 
-body=$(CHECKS="$checks" python3 - <<'EOF'
+repos=${repo:-$(gh repo list "$ORG" --no-archived --limit 200 --json name --jq '.[].name')}
+for r in $repos; do
+  id=$(gh api "repos/$ORG/$r/rulesets" --jq ".[] | select(.name==\"$NAME\") | .id" | head -n1)
+  existing=""
+  [ -z "$id" ] || existing=$(gh api "repos/$ORG/$r/rulesets/$id")
+  # Required CI checks: the ones given with --checks, else the ones this repo's ruleset already has (never dropped).
+  body=$(CHECKS="$checks" EXISTING="$existing" python3 - <<'EOF'
 import json, os
 d = json.load(open("rulesets/protect-main.json"))
 checks = [c for c in os.environ["CHECKS"].split(",") if c]
@@ -37,13 +43,11 @@ if checks:
     d["rules"].append({"type": "required_status_checks", "parameters": {
         "strict_required_status_checks_policy": False,
         "required_status_checks": [{"context": c} for c in checks]}})
+elif os.environ["EXISTING"]:
+    d["rules"] += [r for r in json.loads(os.environ["EXISTING"]).get("rules", []) if r["type"] == "required_status_checks"]
 print(json.dumps(d))
 EOF
 )
-
-repos=${repo:-$(gh repo list "$ORG" --no-archived --limit 200 --json name --jq '.[].name')}
-for r in $repos; do
-  id=$(gh api "repos/$ORG/$r/rulesets" --jq ".[] | select(.name==\"$NAME\") | .id" | head -n1)
   if [ -n "$id" ]; then verb=PUT; url="repos/$ORG/$r/rulesets/$id"; word=update
   else verb=POST; url="repos/$ORG/$r/rulesets"; word=create; fi
   if [ -n "$dry" ]; then echo "[dry run] would $word '$NAME' and turn on branch deletion on $r"; continue; fi
