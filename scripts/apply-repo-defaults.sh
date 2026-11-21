@@ -2,6 +2,7 @@
 # Give every repo in the organisation the standard defaults:
 #   - the "Protect main" ruleset (rulesets/protect-main.json)
 #   - "Automatically delete head branches" after a pull request is merged (restorable from the PR)
+#   - workflows from every outside contributor's pull request wait for the owner's approval
 # Safe to run again: a repo that already has them is updated, never duplicated.
 #
 #   scripts/apply-repo-defaults.sh                       every non-archived repo
@@ -52,5 +53,7 @@ EOF
   else verb=POST; url="repos/$ORG/$r/rulesets"; word=create; fi
   if [ -n "$dry" ]; then echo "[dry run] would $word '$NAME' and turn on branch deletion on $r"; continue; fi
   printf '%s' "$body" | gh api -X "$verb" "$url" --input - --jq '"\(.name): ok"' | sed "s|^|$word $r: |"
+  # Outside contributors' workflow runs always wait for the owner's approval (a fork PR cannot run code unseen).
+  gh api -X PUT "repos/$ORG/$r/actions/permissions/fork-pr-contributor-approval" -f approval_policy=all_external_contributors --silent
   gh api -X PATCH "repos/$ORG/$r" -F delete_branch_on_merge=true --jq '"set \(.name): delete_branch_on_merge=\(.delete_branch_on_merge)"'
 done
