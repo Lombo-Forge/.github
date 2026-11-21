@@ -21,7 +21,7 @@ Every tool is **dry-run by default**, has a `doctor` command that checks your se
 | [**lombo-jellyfin-template**](https://github.com/Lombo-Forge/lombo-jellyfin-template) | Starting point for your own small Jellyfin companion app: tested, containerised, renames itself in one command. | 1.1.0 | The base every tool above was built from |
 | [**lombo**](https://github.com/Lombo-Forge/lombo) | The hub: plugin repository manifest, brand assets, testing checklists and a one-page site. | n/a | n/a |
 
-Found something that does not match? A report of what you ran and what happened is the most useful contribution: each repo has an issue template for it, and `lombo/docs/testing-checklists.md` lists what is still unproven.
+Found something that does not match? A report of what you ran and what happened is the most useful contribution: open an issue in the tool's repo, and see `lombo/docs/testing-checklists.md` for what is still unproven.
 
 ## Make your own
 
